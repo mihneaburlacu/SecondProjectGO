@@ -2,6 +2,7 @@ package apijson
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -39,7 +40,7 @@ func ReadRecords(url string, nrOfRecords int) (Response, error) {
 			response, err := http.Get(url)
 			if err != nil {
 				fmt.Printf("The HTTP request failed with error %v\n", err)
-				return resp, err
+				return resp, errors.New("the http request failed")
 			}
 
 			// Read response body
@@ -66,6 +67,9 @@ func ReadRecords(url string, nrOfRecords int) (Response, error) {
 			}
 		}
 		resp.Results = allResults
+	} else {
+		fmt.Printf("Invalid number of records")
+		return resp, errors.New("invalid number of records")
 	}
 
 	return resp, nil

@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	numRecords := 100
+	numRecords := 10
 	url := "https://randomapi.com/api/6de6abfedb24f889e0b5f675edc50deb?fmt=prettyjson&sole"
 
 	// Read from API
