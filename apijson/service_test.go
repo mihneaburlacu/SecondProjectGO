@@ -132,7 +132,7 @@ func TestEliminateDuplicates(t *testing.T) {
 		},
 	} {
 		t.Run(scenario.name, func(t *testing.T) {
-			EliminateDuplicates(&scenario.input)
+			scenario.input.EliminateDuplicates()
 			//if !reflect.DeepEqual(scenario.input, scenario.want) {
 			if !(fmt.Sprint(scenario.input) == fmt.Sprint(scenario.want)) {
 				t.Errorf("got %v, wanted %v", scenario.input, scenario.want)
@@ -186,6 +186,40 @@ func TestGroupByFirstLetter(t *testing.T) {
 		got := GroupByFirstLetter(scenario.input)
 		if !reflect.DeepEqual(got, scenario.want) {
 			t.Errorf("got %v, wanted: %v", got, scenario.want)
+		}
+	}
+}
+
+func TestWriteGroups(t *testing.T) {
+	groups := map[string][]Record{
+		"A": {{First: "Adam", Last: "Smith", Email: "adam@example.com", Address: "123 Main St", Created: "2022-01-01", Balance: "100"}},
+		"B": {{First: "Bob", Last: "Johnson", Email: "bob@example.com", Address: "456 Main St", Created: "2022-01-01", Balance: "100"}},
+	}
+
+	data, err := WriteGroups(groups)
+	if err != nil {
+		t.Errorf("Error while writing groups to separate .json files: %v", err)
+	}
+
+	for firstLetter, groupData := range data {
+		if len(groupData) == 0 {
+			t.Errorf("Group data for letter %v should not be empty", firstLetter)
+		}
+
+		var group Group
+		err = json.Unmarshal(groupData, &group)
+		if err != nil {
+			t.Errorf("Error while unmarshalling group data: %v", err)
+		}
+
+		if group.TotalRecords != len(groups[group.Index]) {
+			t.Errorf("Unexpected number of records in group data: %d", group.TotalRecords)
+		}
+
+		for i, record := range group.Records {
+			if record != groups[group.Index][i] {
+				t.Errorf("Unexpected record in group data: %v", record)
+			}
 		}
 	}
 }

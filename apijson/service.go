@@ -75,7 +75,7 @@ func ReadRecords(url string, nrOfRecords int) (Response, error) {
 	return resp, nil
 }
 
-func EliminateDuplicates(resp *Response) {
+func (resp *Response) EliminateDuplicates() {
 	// Eliminate duplicates using maps (keys can not be duplicate)
 	m := make(map[Record]string)
 	for _, oneResult := range resp.Results {
@@ -101,8 +101,10 @@ func GroupByFirstLetter(resp Response) map[string][]Record {
 	return groups
 }
 
-func WriteGroups(groups map[string][]Record) error {
+func WriteGroups(groups map[string][]Record) ([][]byte, error) {
 	// Write groups to separate .json files
+	var allData [][]byte
+
 	for firstLetter, records := range groups {
 		var oneGroup Group
 		oneGroup.Index = firstLetter
@@ -113,15 +115,17 @@ func WriteGroups(groups map[string][]Record) error {
 		groupData, err := json.MarshalIndent(oneGroup, "", "    ")
 		if err != nil {
 			fmt.Println("Error while marshal data")
-			return err
+			return allData, err
 		}
 
 		err = os.WriteFile(firstLetter+".json", groupData, 0644)
 		if err != nil {
 			fmt.Printf("An error occurred while writing to file %s.json: %s\n", firstLetter, err)
-			return err
+			return allData, err
 		}
+
+		allData = append(allData, groupData)
 	}
 
-	return nil
+	return allData, nil
 }
