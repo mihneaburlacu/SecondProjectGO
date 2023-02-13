@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	numRecords := 10
+	numRecords := 100
 	url := "https://randomapi.com/api/6de6abfedb24f889e0b5f675edc50deb?fmt=prettyjson&sole"
 
 	// Read from API
@@ -28,6 +28,7 @@ func main() {
 	}
 }
 
+// handler errors function for testing main file (unit testing)
 func HandlerMain(read func(string, int) (apijson.Response, error), writeF func(map[string][]apijson.Record) ([][]byte, error)) error {
 	numRecords := 10
 	url := "https://randomapi.com/api/6de6abfedb24f889e0b5f675edc50deb?fmt=prettyjson&sole"
